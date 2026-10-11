@@ -22,7 +22,7 @@ class LeaveLedgerEntry(TimeStampedModel, UserScopedModel):
     class Meta:
         db_table = "leave_ledger_entry"
         indexes = [
-            models.Index(fields=["user_id", "category", "year"], name="ledger_entry_user_category_year_idx"),
+            models.Index(fields=["user_id", "category", "year"], name="ledger_user_cat_year_idx"),
         ]
 
     def __str__(self) -> str:
