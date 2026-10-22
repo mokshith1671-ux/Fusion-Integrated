@@ -30,7 +30,7 @@ class LeaveRequest(TimeStampedModel, UserScopedModel):
     reason = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
     station_leave_outside_jabalpur = models.BooleanField(default=False)
-    station_leave_details = models.TextField(blank=True, null=True)
+    station_leave_details = models.TextField(blank=True)
     substitute_user_id = models.IntegerField(null=True, blank=True)
     days_counted = models.DecimalField(max_digits=5, decimal_places=2)
 
