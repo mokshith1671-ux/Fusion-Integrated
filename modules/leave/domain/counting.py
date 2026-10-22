@@ -13,8 +13,7 @@ def count_leave_days(category, start_date, end_date, half_day, holidays):
         if category == 'CL':
             days += Decimal('0.5') if half_day and current_date == start_date else Decimal('1')
         elif category in ('EL', 'COL', 'VL'):
-            if current_date not in holidays:
-                days += 1
+            days += 1
         else:
             days += 1
 
