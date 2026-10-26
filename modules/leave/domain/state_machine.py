@@ -11,13 +11,11 @@ WITHDRAWN = "withdrawn"
 
 TERMINAL = frozenset({APPROVED, REJECTED, WITHDRAWN})
 
-#: Still in the running, so the auto-withdraw sweep knows what to close.
-IN_FLIGHT = frozenset({DRAFT, AWAITING_SUBSTITUTE, APPLICANT_ACTION_REQUIRED, AWAITING_UNIT_HEAD, AWAITING_FINAL_SANCTION})
+SANCTIONING_AUTHORITY = "sanctioning_authority"
 
-# Explicit per transition rather than inferred, because a recruiter is an outsider.
 EMPLOYEE = "employee"
-SUBSTITUTE = "substitute"           # TPO / placement chairman, via IAM permissions
-UNIT_HEAD = "unit_head"         # a company's own account, scoped to its postings
+SUBSTITUTE = "substitute"
+UNIT_HEAD = "unit_head"
 
 class InvalidTransition(Exception):
     def __init__(self, frm: str, event: str):
@@ -34,7 +32,7 @@ class Transition:
 
 
 def can_transition(current_status: str, event: str, actor: str) -> bool:
-    return (current_status, event, actor) in TRANSITIONS
+    return (current_status, event, actor) in _INDEX
 
 
 def next_status(current_status: str, event: str, actor: str) -> str:
@@ -43,30 +41,20 @@ def next_status(current_status: str, event: str, actor: str) -> str:
     return _INDEX[(current_status, event)].to
 
 
-TRANSITIONS: tuple[Transition, ...] = (
-    # -- the employee's own moves ------------------------------------------
+TRANSITIONS = (
     Transition(DRAFT, "submit_with_substitute", EMPLOYEE, AWAITING_SUBSTITUTE),
     Transition(DRAFT, "submit_without_substitute", EMPLOYEE, APPLICANT_ACTION_REQUIRED),
-
-    # -- substitute responses ----------------------------------------------
     Transition(AWAITING_SUBSTITUTE, "substitute_accept", SUBSTITUTE, APPLICANT_ACTION_REQUIRED),
     Transition(AWAITING_SUBSTITUTE, "substitute_decline", SUBSTITUTE, AWAITING_UNIT_HEAD),
-
-    # -- unit head responses -----------------------------------------------
     Transition(APPLICANT_ACTION_REQUIRED, "unit_head_approve", UNIT_HEAD, APPROVED),
     Transition(APPLICANT_ACTION_REQUIRED, "unit_head_reject", UNIT_HEAD, REJECTED),
     Transition(APPLICANT_ACTION_REQUIRED, "unit_head_recommend", UNIT_HEAD, AWAITING_FINAL_SANCTION),
-
-    # -- final sanction responses ------------------------------------------
-    Transition(AWAITING_FINAL_SANCTION, "sanction_approve", UNIT_HEAD, APPROVED),
-    Transition(AWAITING_FINAL_SANCTION, "sanction_reject", UNIT_HEAD, REJECTED),
-
-    # -- withdrawal: a student may pull out of anything not already ended ---
-    Transition(DRAFT, "withdraw", EMPLOYEE, WITHDRAWN),
+    Transition(AWAITING_FINAL_SANCTION, "sanction_approve", SANCTIONING_AUTHORITY, APPROVED),
+    Transition(AWAITING_FINAL_SANCTION, "sanction_reject", SANCTIONING_AUTHORITY, REJECTED),
     Transition(AWAITING_SUBSTITUTE, "withdraw", EMPLOYEE, WITHDRAWN),
     Transition(APPLICANT_ACTION_REQUIRED, "withdraw", EMPLOYEE, WITHDRAWN),
     Transition(AWAITING_UNIT_HEAD, "withdraw", EMPLOYEE, WITHDRAWN),
     Transition(AWAITING_FINAL_SANCTION, "withdraw", EMPLOYEE, WITHDRAWN),
 )
 
-_INDEX = {(t.frm, t.event): t for t in TRANSITIONS}
+_INDEX = {(t.frm, t.event, t.actor): t for t in TRANSITIONS}
