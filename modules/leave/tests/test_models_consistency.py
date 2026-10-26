@@ -23,7 +23,7 @@ STATUSES = [
 
 
 def test_request_status_choices_match_state_machine():
-    assert set(f[0] for f in LeaveRequest._meta.get_field("status").choices) == set(STATUSES)
+    assert {f[0] for f in LeaveRequest._meta.get_field("status").choices} == set(STATUSES)
 
 
 def test_status_fields_are_long_enough():

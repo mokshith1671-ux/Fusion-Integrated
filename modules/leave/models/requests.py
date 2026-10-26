@@ -6,8 +6,10 @@ from core.db.mixins import TimeStampedModel, UserScopedModel
 class LeaveRequest(TimeStampedModel, UserScopedModel):
     STATUS_CHOICES = [
         ("draft", "Draft"),
-        ("awaiting_substitute", "Awaiting Substitute"),
-        ("pending_unit_head", "Pending Unit Head"),
+        ("awaiting_substitute", "Awaiting substitute response"),
+        ("applicant_action_required", "Applicant action required"),
+        ("awaiting_unit_head", "Awaiting Unit Head review"),
+        ("awaiting_final_sanction", "Awaiting final sanction"),
         ("approved", "Approved"),
         ("rejected", "Rejected"),
         ("withdrawn", "Withdrawn"),
@@ -28,7 +30,7 @@ class LeaveRequest(TimeStampedModel, UserScopedModel):
     end_date = models.DateField()
     half_day = models.BooleanField(default=False)
     reason = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="draft")
     station_leave_outside_jabalpur = models.BooleanField(default=False)
     station_leave_details = models.TextField(blank=True)
     substitute_user_id = models.IntegerField(null=True, blank=True)
@@ -51,8 +53,8 @@ class LeaveRequest(TimeStampedModel, UserScopedModel):
 class LeaveRequestHistory(models.Model):
     request = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE,
                                 related_name="history")
-    from_status = models.CharField(max_length=20)
-    to_status = models.CharField(max_length=20)
+    from_status = models.CharField(max_length=30)
+    to_status = models.CharField(max_length=30)
     actor_user_id = models.IntegerField(null=True, blank=True)
     note = models.TextField(blank=True)
     at = models.DateTimeField(auto_now_add=True)
