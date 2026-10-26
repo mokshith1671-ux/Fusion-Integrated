@@ -31,19 +31,9 @@ class Transition:
     to: str
 
 
-def can_transition(current_status: str, event: str, actor: str) -> bool:
-    return (current_status, event, actor) in _INDEX
-
-
-def next_status(current_status: str, event: str, actor: str) -> str:
-    if not can_transition(current_status, event, actor):
-        raise InvalidTransition(current_status, event)
-    return _INDEX[(current_status, event)].to
-
-
 TRANSITIONS = (
     Transition(DRAFT, "submit_with_substitute", EMPLOYEE, AWAITING_SUBSTITUTE),
-    Transition(DRAFT, "submit_without_substitute", EMPLOYEE, APPLICANT_ACTION_REQUIRED),
+    Transition(DRAFT, "submit_without_substitute", EMPLOYEE, AWAITING_UNIT_HEAD),
     Transition(AWAITING_SUBSTITUTE, "substitute_accept", SUBSTITUTE, APPLICANT_ACTION_REQUIRED),
     Transition(AWAITING_SUBSTITUTE, "substitute_decline", SUBSTITUTE, AWAITING_UNIT_HEAD),
     Transition(APPLICANT_ACTION_REQUIRED, "unit_head_approve", UNIT_HEAD, APPROVED),
@@ -58,3 +48,13 @@ TRANSITIONS = (
 )
 
 _INDEX = {(t.frm, t.event, t.actor): t for t in TRANSITIONS}
+
+
+def can_transition(current_status: str, event: str, actor: str) -> bool:
+    return (current_status, event, actor) in _INDEX
+
+
+def next_status(current_status: str, event: str, actor: str) -> str:
+    if not can_transition(current_status, event, actor):
+        raise InvalidTransition(current_status, event)
+    return _INDEX[(current_status, event, actor)].to
