@@ -34,8 +34,8 @@ class Transition:
 TRANSITIONS = (
     Transition(DRAFT, "submit_with_substitute", EMPLOYEE, AWAITING_SUBSTITUTE),
     Transition(DRAFT, "submit_without_substitute", EMPLOYEE, AWAITING_UNIT_HEAD),
-    Transition(AWAITING_SUBSTITUTE, "substitute_accept", SUBSTITUTE, APPLICANT_ACTION_REQUIRED),
-    Transition(AWAITING_SUBSTITUTE, "substitute_decline", SUBSTITUTE, AWAITING_UNIT_HEAD),
+    Transition(AWAITING_SUBSTITUTE, "substitute_accept", SUBSTITUTE, AWAITING_UNIT_HEAD),
+    Transition(AWAITING_SUBSTITUTE, "substitute_decline", SUBSTITUTE, APPLICANT_ACTION_REQUIRED),
     Transition(AWAITING_UNIT_HEAD, "unit_head_approve", UNIT_HEAD, APPROVED),
     Transition(AWAITING_UNIT_HEAD, "unit_head_reject", UNIT_HEAD, REJECTED),
     Transition(AWAITING_UNIT_HEAD, "unit_head_recommend", UNIT_HEAD, AWAITING_FINAL_SANCTION),
