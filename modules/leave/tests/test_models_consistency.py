@@ -39,3 +39,9 @@ def test_status_fields_are_long_enough():
 
 def test_default_status_is_draft():
     assert LeaveRequest._meta.get_field("status").default == DRAFT
+
+
+# Ensure that the unique constraint on user and dates is not present
+def test_no_unique_constraint_on_user_and_dates():
+    constraints = [c.name for c in LeaveRequest._meta.constraints]
+    assert "request_unique_per_user_and_dates" not in constraints
