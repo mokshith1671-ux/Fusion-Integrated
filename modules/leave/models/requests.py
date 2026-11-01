@@ -47,7 +47,7 @@ class LeaveRequest(TimeStampedModel, UserScopedModel):
 
 
 class LeaveRequestHistory(models.Model):
-    request = models.ForeignKey(LeaveRequest, on_delete=models.CASCADE,
+    request = models.ForeignKey(LeaveRequest, on_delete=models.PROTECT,
                                 related_name="history")
     from_status = models.CharField(max_length=30)
     to_status = models.CharField(max_length=30)
@@ -62,3 +62,11 @@ class LeaveRequestHistory(models.Model):
 
     def __str__(self) -> str:
         return f"req#{self.request_id} {self.from_status}->{self.to_status}"
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding:
+            raise ValueError("History rows cannot be modified.")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValueError("History rows cannot be deleted.")

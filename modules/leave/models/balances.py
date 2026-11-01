@@ -15,7 +15,7 @@ class LeaveLedgerEntry(TimeStampedModel, UserScopedModel):
     year = models.PositiveSmallIntegerField()
     entry_type = models.CharField(max_length=10, choices=ENTRY_TYPE_CHOICES)
     days = models.DecimalField(max_digits=5, decimal_places=2)
-    request = models.ForeignKey("LeaveRequest", on_delete=models.SET_NULL,
+    request = models.ForeignKey("LeaveRequest", on_delete=models.PROTECT,
                                 related_name="ledger_entries", null=True, blank=True)
     note = models.TextField(blank=True)
 
@@ -27,3 +27,11 @@ class LeaveLedgerEntry(TimeStampedModel, UserScopedModel):
 
     def __str__(self) -> str:
         return f"entry#{self.pk} u{self.user_id} {self.category} {self.entry_type} {self.days}"
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding:
+            raise ValueError("Ledger entries cannot be modified.")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValueError("Ledger entries cannot be deleted.")
