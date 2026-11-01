@@ -38,10 +38,6 @@ class LeaveRequest(TimeStampedModel, UserScopedModel):
 
     class Meta:
         db_table = "leave_request"
-        constraints = [
-            models.UniqueConstraint(fields=["user_id", "start_date", "end_date"],
-                                    name="request_unique_per_user_and_dates"),
-        ]
         indexes = [
             models.Index(fields=["user_id", "status"], name="request_user_idx"),
         ]
